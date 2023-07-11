@@ -1,0 +1,101 @@
+FROM ubuntu:22.04
+
+RUN apt update
+RUN apt-get install -y python3-dev libpq-dev python3-pip python3-venv git-core redis-server
+
+RUN mkdir -p ~/ckan/lib
+RUN ln -s ~/ckan/lib /usr/lib/ckan
+RUN mkdir -p ~/ckan/etc
+RUN ln -s ~/ckan/etc /etc/ckan
+
+ENV VIRTUAL_ENV=/usr/lib/ckan/default
+
+RUN mkdir -p $VIRTUAL_ENV 
+RUN chown `whoami` $VIRTUAL_ENV 
+RUN python3 -m venv $VIRTUAL_ENV
+
+ENV OLDPATH="$PATH"
+ENV PATH="$VIRTUAL_ENV/bin:$PATH"
+
+RUN pip install --upgrade pip
+RUN pip install -e 'git+https://github.com/ckan/ckan.git@ckan-2.10.1#egg=ckan[requirements]'
+
+#RUN apt install -y postgresql
+#RUN runuser -u postgres createuser -S -D -R -P ckan_default
+#RUN runuser -u postgres createdb -O ckan_default ckan_default -E utf-8
+
+# Solr Installation Pending (or use other docker container)
+
+RUN mkdir -p /etc/ckan/default
+RUN chown -R `whoami` /etc/ckan/
+
+RUN apt-get install -y libmagic-dev
+RUN ckan generate config /etc/ckan/default/ckan.ini
+
+RUN apt-get install -y python-dev-is-python3 libxml2-dev libxslt1-dev libgeos-c1v5
+
+RUN pip install -e "git+https://github.com/ckan/ckanext-spatial.git#egg=ckanext-spatial"
+RUN pip install -r /usr/lib/ckan/default/src/ckanext-spatial/requirements.txt
+
+# Setup Postgres
+# RUN runuser -u postgres -- createuser -S -D -R ckan_default
+# RUN runuser -u postgres -- createdb -O ckan_default ckan_default -E utf-8
+
+# Edit ckan.ini
+# sqlalchemy.url = postgresql://ckan_default:pass@localhost/ckan_default
+# ckan.site_id = default
+# ckan.site_url = http://demo.ckan.org
+
+# EXPOSE 5000
+# cd /usr/lib/ckan/default/src/ckan
+# ckan -c /etc/ckan/default/ckan.ini run
+
+
+# Setup
+
+ENV SRC_DIR=/usr/src/ckan
+ENV APP_DIR=/usr/lib/ckan/default/bin
+ENV CKAN_INI=/etc/ckan/default/ckan.ini
+ENV PIP_SRC=${SRC_DIR}
+ENV CKAN_STORAGE_PATH=/var/lib/ckan
+ENV GIT_URL=https://github.com/ckan/ckan.git
+# CKAN version to build
+ENV GIT_BRANCH=${CKAN_VERSION}
+# Customize these on the .env file if needed
+ENV CKAN_SITE_URL=http://localhost:5000
+ENV CKAN__PLUGINS image_view text_view recline_view datastore datapusher envvars spatial_metadata spatial_query
+
+# UWSGI options
+ENV UWSGI_HARAKIRI=50
+
+WORKDIR ${APP_DIR}
+
+# Plugins
+RUN apt-get install -y uwsgi uwsgi-plugin-python3 curl
+RUN pip3 install -e git+https://github.com/okfn/ckanext-envvars.git#egg=ckanext-envvars
+
+RUN mkdir -p ${SRC_DIR} && \
+    # Install pip, supervisord and uwsgi
+    curl -o ${SRC_DIR}/get-pip.py https://bootstrap.pypa.io/get-pip.py && \
+    python3 ${SRC_DIR}/get-pip.py && \
+    pip3 install supervisor && \
+    mkdir /etc/supervisord.d && \
+    rm -rf ${SRC_DIR}/get-pip.py
+
+COPY setup/supervisord.conf /etc
+
+RUN mkdir -p ${CKAN_STORAGE_PATH}
+
+COPY setup/prerun.py ${APP_DIR}
+COPY setup/start_ckan.sh ${APP_DIR}
+ADD https://raw.githubusercontent.com/ckan/ckan/master/wsgi.py ${APP_DIR}
+RUN chmod 644 ${APP_DIR}/wsgi.py
+
+# Create entrypoint directory for children image scripts
+ONBUILD RUN mkdir /docker-entrypoint.d
+
+EXPOSE 5000
+
+HEALTHCHECK --interval=60s --timeout=5s --retries=5 CMD curl --fail http://localhost:5000/api/3/action/status_show || exit CMD ["/usr/lib/ckan/default/bin/start_ckan.sh"]
+
+CMD ["/usr/lib/ckan/default/bin/start_ckan.sh"]

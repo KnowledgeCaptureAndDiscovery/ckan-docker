@@ -1,0 +1,14 @@
+# custom_theme-js:
+#   filter: rjsmin
+#   output: ckanext-custom_theme/%(version)s-custom_theme.js
+#   contents:
+#     - js/custom_theme.js
+#   extra:
+#     preload:
+#       - base/main
+
+# custom_theme-css:
+#   filter: cssrewrite
+#   output: ckanext-custom_theme/%(version)s-custom_theme.css
+#   contents:
+#     - css/custom_theme.css
