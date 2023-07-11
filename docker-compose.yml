@@ -78,7 +78,7 @@ services:
     build:
       context: solr
       dockerfile: Dockerfile.spatial
-    image: ckan/ckan-solr:${SOLR_IMAGE_VERSION}
+    #image: ckan/ckan-solr:${SOLR_IMAGE_VERSION}
     volumes:
       - solr_data:/var/solr
     restart: unless-stopped

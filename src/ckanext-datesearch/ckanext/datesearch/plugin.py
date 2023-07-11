@@ -12,7 +12,8 @@ class DateSearchPlugin(plugins.SingletonPlugin):
 
     def update_config(self, config):
         toolkit.add_template_directory(config, 'templates')
-        toolkit.add_resource('fanstatic', 'ckanext-datesearch')
+        toolkit.add_public_directory(config, 'public')
+        toolkit.add_resource('public', 'ckanext-datesearch')
 
     def before_search(self, search_params):
         extras = search_params.get('extras')

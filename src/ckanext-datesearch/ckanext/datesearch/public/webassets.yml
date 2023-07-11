@@ -1,0 +1,16 @@
+datesearch_js:
+  filter: rjsmin
+  output: ckanext-datesearch/%(version)s_datesearch.js
+  extra:
+    preload:
+      - base/main
+  contents:
+    - js/moment.js
+    - js/bootstrap-datepicker.js
+    - js/daterangepicker-module.js
+
+datesearch_css:
+  filters: cssrewrite
+  output: ckanext-datesearch/%(version)s_datesearch.css
+  contents:
+    - css/datepicker.css
