@@ -81,6 +81,8 @@ services:
     #image: ckan/ckan-solr:${SOLR_IMAGE_VERSION}
     volumes:
       - solr_data:/var/solr
+    ports:
+      - "0.0.0.0:${SOLR_PORT_HOST}:8983"
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "wget", "-qO", "/dev/null", "http://localhost:8983/solr/"]

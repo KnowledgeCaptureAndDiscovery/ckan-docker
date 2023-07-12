@@ -79,8 +79,7 @@ RUN cp /tmp/config_declaration.yaml /usr/src/ckan/ckan/ckan/config/config_declar
 RUN pip install -e "git+https://github.com/ckan/ckanext-spatial.git#egg=ckanext-spatial" && \
 	pip install -r /usr/src/ckan/ckanext-spatial/requirements.txt
 RUN pip install -e "git+https://github.com/ckan/ckanext-geoview.git#egg=ckanext-geoview"
-#RUN ckan config-tool ${CKAN_INI} "ckanext.spatial.search_backend = solr-bbox"
-#RUN ckan config-tool ${CKAN_INI} -s "DEFAULT" -e "debug = true"
+RUN ckan config-tool ${CKAN_INI} "ckanext.spatial.search_backend = solr-spatial-field"
 
 # Create a local user and group to run the app
 RUN addgroup --gid 92 --system ckan && \

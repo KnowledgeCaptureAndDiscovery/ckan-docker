@@ -50,6 +50,13 @@ ENV SOLR_BBOX_FIELDS '<field name="bbox_area" type="float" indexed="true" stored
 RUN sed -i "/<fields>/a $SOLR_BBOX_FIELDS" $SOLR_SCHEMA_FILE
 
 
+## Temporal Range
+ENV TEMPORAL_RANGE_FIELD_DEFINITION '<fieldType name="dateRange"   class="solr.DateRangeField" autoIndex="true" />'
+ENV TEMPORAL_RANGE_FIELD '<field name="extras_temporal_range" type="dateRange" indexed="true" stored="true" multiValued="true" />'
+
+RUN sed -i "/<types>/a $TEMPORAL_RANGE_FIELD_DEFINITION" $SOLR_SCHEMA_FILE
+RUN sed -i "/<fields>/a $TEMPORAL_RANGE_FIELD" $SOLR_SCHEMA_FILE
+
 RUN chmod 644 $SOLR_SCHEMA_FILE
 
 USER solr
