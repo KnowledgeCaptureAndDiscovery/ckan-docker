@@ -36,11 +36,12 @@ this.ckan.module('daterangepicker-module', function ($, _) {
             }
 
             // Add a date-range picker widget to the <input> with id #daterange
-            $('#datepicker.input-daterange').datepicker({
-                format: "yyyy-mm-dd",
-                keyboardNavigation: false,
-                autoclose: true
-            }).on('changeDate', function (ev) {
+            $('#datepicker.input-daterange input').each(function() {
+                $(this).datepicker({
+                    format: "yyyy-mm-dd",
+                    keyboardNavigation: false,
+                    autoclose: true
+                }).on('changeDate', function (ev) {
                     // Bootstrap-daterangepicker calls this function after the user picks a start and end date.
 
                     // Format the start and end dates into strings in a date format that Solr understands.
@@ -69,6 +70,7 @@ this.ckan.module('daterangepicker-module', function ($, _) {
                     // Submit the <form id="dataset-search">.
                     form.submit();
                 });
+            });
         }
     }
 });

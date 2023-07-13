@@ -12,11 +12,12 @@
       <i class="fa fa-filter"></i> {{ _('Date Range') }}
       <a href="{{ h.remove_url_param(['ext_start_date', 'ext_end_date']) }}" class="action">{{ _('Clear') }}</a>
     </h2>
-    <div class="module-content input-prepend input-daterange" data-module="daterange-query" id="datepicker">
-      <input type="text" class="input-mini" style="cursor:pointer;" readonly="" name="start" id="start" data-module="daterangepicker-module" />
-      <span class="add-on" style="border:none;background-color:#ffffff;">&nbsp;&nbsp;to&nbsp;&nbsp;</span>
-      <input type="text" class="input-mini" style="cursor:pointer;" readonly="" name="end" id="end" data-module="daterangepicker-module" />
+    <div class="module-content input-group input-daterange" data-module="daterange-query" id="datepicker">
+      <input type="text" class="form-control" style="border-radius:3px" name="start" id="start" data-module="daterangepicker-module" />
+      <div class="input-group-addon" style="margin:0px;padding:5px">to</div>
+      <input type="text" class="form-control" style="border-radius:3px" name="end" id="end" data-module="daterangepicker-module" />
     </div>
+    <p />
   </section>
 
   {{ super() }}

@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='ckanext-datesearch',
-    version='0.3.2',
+    version='0.3.3',
     description='CKAN extension for publication year facet',
     long_description=
     '''
